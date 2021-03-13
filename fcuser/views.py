@@ -1,10 +1,33 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
 from .models import Fcuser
-
+from .forms import LoginForm
 
 # Create your views here.
+
+
+def home(request):
+    return render(request, 'home.html')
+
+
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            request.session['user'] = form.user_id
+            return redirect('/')
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
+
+
+def logout(request):
+    if request.session.get('user'):
+        del(request.session['user'])
+
+    return redirect('/')
 
 
 def register(request):
